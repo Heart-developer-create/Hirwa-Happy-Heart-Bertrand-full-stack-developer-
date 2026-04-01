@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIRWA Happy – Album</title>
+  <style>
+    body{margin:0;font-family:Arial, sans-serif;background:#0a0a0a;color:#fff;transition:.3s}
+    .light{background:#fff;color:#000}
+    header{padding:20px;display:flex;justify-content:space-between;align-items:center}
+    .gold{color:gold}
+    nav a{margin:0 10px;color:inherit;text-decoration:none}.container{padding:20px}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+}
+
+.card{
+  position:relative;
+  overflow:hidden;
+  border-radius:14px;
+  background:#111;
+  transform:translateY(20px);
+  opacity:0;
+  transition:opacity .8s, transform .8s;
+}
+
+.card.show{opacity:1;transform:translateY(0)}
+
+.card img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .35s ease;
+}
+
+.card:hover img{transform:scale(1.08)}
+
+/* overlay label */
+.overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.6), transparent 60%);
+  display:flex;align-items:flex-end;justify-content:flex-start;
+  padding:10px;
+  opacity:0;transition:.3s;
+}
+.card:hover .overlay{opacity:1}
+
+.badge{background:rgba(255,215,0,.9);color:#000;padding:4px 8px;border-radius:999px;font-size:12px}
+
+/* LIGHTBOX */
+.lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.9);
+  display:none;align-items:center;justify-content:center;z-index:1000;
+}
+.lightbox img{max-width:90%;max-height:80%;border-radius:12px}
+.lb-controls{position:absolute;bottom:20px;width:100%;text-align:center}
+.lb-controls button{margin:0 6px;padding:10px 14px;border:none;background:gold;color:#000;border-radius:8px}
+.lb-close{position:absolute;top:16px;right:16px;background:gold;border:none;padding:8px 10px;border-radius:8px}
+
+footer{padding:20px;text-align:center;border-top:1px solid #333;margin-top:20px}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h2 class="gold">HIRWA Happy</h2>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#album">Album</a>
+    </nav>
+    <button onclick="toggleMode()">🌙/☀️</button>
+  </header>  <div class="container">
+    <h2 class="gold" id="album" style="text-align:center">My Album</h2><div class="grid" id="grid">
+  <!-- Replace src with your real photos (photo1.jpg ... photo20.jpg) -->
+  <div class="card"><img src="k.jpg" alt=""><div class="overlay"><span class="badge">Lifestyle</span></div></div>
+  <div class="card"><img src="l.jpg" alt=""><div class="overlay"><span class="badge">Music</span></div></div>
+  <div class="card"><img src="m.jpg" alt=""><div class="overlay"><span class="badge">Branding</span></div></div>
+  <div class="card"><img src="a.png" alt=""><div class="overlay"><span class="badge">Lifestyle</span></div></div>
+  <div class="card"><img src="i.png" alt=""><div class="overlay"><span class="badge">Music</span></div></div>
+  <div class="card"><img src="d.jpg" alt=""><div class="overlay"><span class="badge">Branding</span></div></div>
+  <div class="card"><img src="e.jpg" alt=""><div class="overlay"><span class="badge">Lifestyle</span></div></div>
+  <div class="card"><img src="h.jpg" alt=""><div class="overlay"><span class="badge">Music</span></div></div>
+  <div class="card"><img src="y.jpg" alt=""><div class="overlay"><span class="badge">Branding</span></div></div>
+  <div class="card"><img src="z.jpg" alt=""><div class="overlay"><span class="badge">Lifestyle</span></div></div>
+  <div class="card"><img src="k.jpg" alt=""><div class="overlay"><span class="badge">Music</span></div></div>
+  <div class="card"><img src="f .png" alt=""><div class="overlay"><span class="badge">Branding</span></div></div>
+</div>
+
+  </div>  <!-- LIGHTBOX -->  <div class="lightbox" id="lightbox">
+    <button class="lb-close" onclick="closeLB()">✖</button>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-controls">
+      <button onclick="prevImg()">⬅ Prev</button>
+      <button onclick="nextImg()">Next ➡</button>
+    </div>
+  </div>  <footer>© 2026 HIRWA Happy Heart Bertrand</footer>  <script>
+    // DARK MODE
+    function toggleMode(){ document.body.classList.toggle('light'); }
+
+    // REVEAL ANIMATION
+    const cards = document.querySelectorAll('.card');
+    function reveal(){
+      const h = window.innerHeight;
+      cards.forEach(c=>{
+        const top = c.getBoundingClientRect().top;
+        if(top < h - 80) c.classList.add('show');
+      });
+    }
+    window.addEventListener('scroll', reveal);
+    window.addEventListener('load', reveal);
+
+    // LIGHTBOX
+    const imgs = Array.from(document.querySelectorAll('.card img'));
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    let idx = 0;
+
+    imgs.forEach((im, i)=>{
+      im.addEventListener('click', ()=>{
+        idx = i;
+        openLB();
+      });
+    });
+
+    function openLB(){
+      lb.style.display = 'flex';
+      lbImg.src = imgs[idx].src;
+    }
+    function closeLB(){ lb.style.display = 'none'; }
+    function nextImg(){ idx = (idx + 1) % imgs.length; lbImg.src = imgs[idx].src; }
+    function prevImg(){ idx = (idx - 1 + imgs.length) % imgs.length; lbImg.src = imgs[idx].src; }
+
+    // SWIPE in LIGHTBOX
+    let sx=0, ex=0;
+    lb.addEventListener('touchstart', e=> sx = e.touches[0].clientX);
+    lb.addEventListener('touchend', e=>{
+      ex = e.changedTouches[0].clientX;
+      if(sx - ex > 50) nextImg();
+      else if(ex - sx > 50) prevImg();
+    });
+  </script></body>
+</html>/
